@@ -1,0 +1,19 @@
+
+CREATE COMPUTE MODULE FROM_LQ1_TO_LQ2_Compute
+   CREATE FUNCTION Main() RETURNS BOOLEAN
+   BEGIN
+      CALL CopyEntireMessage();
+      CALL AppendAdditionalInfo();
+      RETURN TRUE;
+   END;
+
+   CREATE PROCEDURE CopyEntireMessage() BEGIN
+      SET OutputRoot = InputRoot;
+   END;
+   
+   CREATE PROCEDURE AppendAdditionalInfo() BEGIN
+   	  SET OutputRoot.XMLNS.LogRecord.CreationTime = OutputRoot.Properties.CreationTime;
+   	  SET OutputRoot.XMLNS.LogRecord.SourceQueue = OutputRoot.MQMD.SourceQueue;
+	  SET OutputRoot.XMLNS.LogRecord.MessageBody = CAST(InputRoot.BLOB.BLOB as char CCSID InputRoot.Properties.CodedCharSetId Encoding InputRoot.Properties.Encoding);
+   END;
+END MODULE;
